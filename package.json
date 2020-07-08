@@ -26,6 +26,9 @@
     ]
   },
   "dependencies": {
+    "express": "^4.17.1",
+    "isomorphic-unfetch": "^3.0.0",
+    "mongoose": "^5.9.22",
     "next": "latest",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
