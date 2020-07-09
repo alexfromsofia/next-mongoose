@@ -7,20 +7,22 @@ interface Connection extends ConnectionOptions {
 const connection: Connection = {}
 
 async function dbConnect() {
+  // eslint-disable-next-line
+  console.log('Using existing connection')
   if (connection.isConnected) {
     return
   }
 
   const db = await mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
-    bufferCommands: false,
-    bufferMaxEntries: 0,
+    useCreateIndex: true,
+    useFindAndModify: false,
     useUnifiedTopology: true,
   })
 
   connection.isConnected = !!db.connections[0].readyState
   // eslint-disable-next-line
-  console.log(connection.isConnected)
+  console.log('DB Connected')
 }
 
 export default dbConnect

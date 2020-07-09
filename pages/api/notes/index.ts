@@ -2,10 +2,13 @@ import { Request, Response } from 'express'
 
 import dbConnect from '../../../utils/dbConnect'
 import Note from '../../../models/Note'
+import authMiddleware from '../../../middleware/authentication'
 
 dbConnect()
 
 export default async (req: Request, res: Response) => {
+  await authMiddleware(req, res)
+
   const { method } = req
 
   switch (method) {
