@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt'
-import { NextFunction } from 'express'
+import jwt from 'jsonwebtoken'
+// import { NextFunction } from 'express'
 import mongoose, { Schema, Document, Model } from 'mongoose'
 
 const { String } = Schema.Types
@@ -43,17 +44,52 @@ const UserSchema = new Schema(
   {
     timestamps: true,
   }
-).pre('save', async function <SavedUser>(next: NextFunction) {
-  // Schema Middleware for hashing password before save
-  // Must be a standard  function in order to bind the this to userSchema
-  const user = this
+)
 
-  if (user.isModified('password')) {
-    user.password = await bcrypt.hash(user.password, 8)
+UserSchema.statics.findByCredentials = async (email, password) => {
+  const user = await model.findOne({ email })
+
+  if (!user) {
+    throw new Error('Unable to login.')
+  }
+  const isMatch = await bcrypt.compare(password, user.password)
+
+  if (!isMatch) {
+    throw new Error('Unable to login.')
   }
 
-  next()
-})
+  return user
+}
+
+UserSchema.methods.generateAuthToken = async function () {
+  const user = this
+  const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET)
+  user.tokens = user.tokens.concat({ token })
+
+  await user.save()
+  return token
+}
+
+/* TODO:
+// Schema Middleware for hashing password before save
+// Must be a standart function in order to bind the this to userSchema
+userSchema.pre("save", async function (next) {
+  const user = this;
+
+  if (user.isModified("password")) {
+      user.password = await bcrypt.hash(user.password, 8);
+  }
+
+  next();
+});
+
+userSchema.pre("remove", async function (next) {
+  const user = this;
+
+  await Task.deleteMany({ owner: user._id });
+  next();
+});
+TODO */
 
 let model: Model<SavedUser>
 
