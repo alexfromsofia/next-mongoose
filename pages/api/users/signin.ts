@@ -12,13 +12,12 @@ export default async (req: Request, res: Response) => {
     case 'POST':
       try {
         const { email, password } = req.body
-
         const user = await User.findByCredentials(email, password)
         const token = await user.generateAuthToken()
 
         res.send({ user, token })
       } catch (error) {
-        res.status(400).send()
+        res.status(400).send({ error: 'Unable to login' })
       }
       break
 

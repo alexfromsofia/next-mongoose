@@ -1,4 +1,3 @@
-// import Router from 'next/router'
 import { NextPageContext } from 'next'
 import fetch from 'isomorphic-unfetch'
 
@@ -24,12 +23,17 @@ const Home = function ({ notes }: Props) {
 
 Home.getInitialProps = async (ctx: NextPageContext) => {
   try {
-    const res = await fetch(NOTES_API_URL)
+    const res = await fetch(NOTES_API_URL, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${window.sessionStorage.getItem('jwtToken')}`,
+      },
+    })
 
     unauthorizedRedirect(res, ctx)
 
     const response = await res.json()
-
+    console.log(response)
     const { success, data: notes } = response
     if (!success) return { notes: [] }
 

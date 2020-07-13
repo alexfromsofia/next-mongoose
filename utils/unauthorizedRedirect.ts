@@ -4,7 +4,7 @@ import { NextPageContext } from 'next'
 export default function (res: Response, ctx: NextPageContext) {
   if (res.status === 401) {
     ctx.res.writeHead(302, {
-      Location: '/login',
+      Location: '/signin',
     })
 
     ctx.res.end()
